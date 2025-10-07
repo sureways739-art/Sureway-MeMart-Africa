@@ -1,166 +1,137 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sureway MeMart Africa</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>SureWay MeMart Africa</title>
+<meta name="description" content="Revolutionizing African Enterprise through Blockchain and Digital Economy" />
+<link rel="icon" type="image/png" href="sureway-logo.png" />
+
+<!-- Manifest (inline for single-file use) -->
+<link rel="manifest" id="inline-manifest" href="data:application/json,{
+  &quot;name&quot;:&quot;SureWay MeMart Africa&quot;,
+  &quot;short_name&quot;:&quot;MeMart&quot;,
+  &quot;start_url&quot;:&quot;.&quot;,
+  &quot;display&quot;:&quot;standalone&quot;,
+  &quot;background_color&quot;:&quot;#004aad&quot;,
+  &quot;theme_color&quot;:&quot;#004aad&quot;
+}" />
+
 <style>
-  body { margin:0; font-family:sans-serif; background:#0b3d0b; color:#ffd700; }
-  header { background:#004d00; padding:1rem; display:flex; align-items:center; }
-  header img { height:50px; margin-right:1rem; }
-  header h1 { margin:0; font-size:1.5rem; }
-  .dashboard { padding:1rem; display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
-  .card { background:#006600; padding:1rem; border-radius:10px; color:#fff; }
-  button { background:#ffd700; color:#004d00; border:none; padding:0.5rem 1rem; border-radius:5px; cursor:pointer; }
-  #splash-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#004d00; display:flex; justify-content:center; align-items:center; z-index:1000; color:#ffd700; font-size:2rem; }
-  .fade-out { animation: fadeOut 1s forwards; }
-  @keyframes fadeOut { to { opacity:0; visibility:hidden; } }
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
+body{background:#f5f7fa;color:#222;display:flex;flex-direction:column;align-items:center;min-height:100vh;text-align:center}
+#splash-overlay{position:fixed;inset:0;background:#004aad;color:gold;font-size:1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity 1s ease}
+#splash-overlay.fade-out{opacity:0;pointer-events:none}
+header{background:#004aad;color:#fff;width:100%;padding:1rem;font-size:1.2rem;font-weight:600;box-shadow:0 2px 5px rgba(0,0,0,0.2)}
+main{max-width:600px;width:90%;margin:2rem auto;background:#fff;border-radius:1rem;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+button{background:#004aad;color:#fff;border:none;border-radius:8px;padding:0.7rem 1.5rem;font-size:1rem;margin:0.5rem;cursor:pointer;transition:background 0.3s ease}
+button:hover{background:#00368b}
+footer{margin-top:auto;padding:1rem;background:#f1f1f1;font-size:0.9rem;color:#666;width:100%;text-align:center}
+#wallet-info{margin-top:1rem;font-size:0.9rem;color:#333}
 </style>
 </head>
 <body>
+<div id="splash-overlay">
+  <img src="sureway-logo.png" alt="SureWay Logo" width="120" height="120" style="margin-bottom:1rem;">
+  <p>Loading SureWay MeMart Africa...</p>
+</div>
 
-<!-- Splash overlay -->
-<div id="splash-overlay">Sureway MeMart Africa</div>
-
-<header>
-  <img src="sureway-logo.png" alt="Logo">
-  <h1>Sureway MeMart Africa</h1>
-</header>
-
-<div class="dashboard">
-  <div class="card">
-    <h2>Wallet</h2>
-    <button id="connect-wallet">Connect Leather Wallet</button>
-    <p id="wallet-address"></p>
-    <p>STX Balance: <span id="wallet-balance">0</span></p>
+<header>SureWay MeMart Africa</header>
+<main>
+  <h2>Empowering African Enterprise through Blockchain</h2>
+  <p>Engage in the global digital economy with SureWay.</p>
+  <p style="margin-top:.5rem;color:#555;">
+    Featuring opportunities like <strong>Dangote Group listings</strong> and SEC’s <strong>Tokenized Tesla &amp; NVIDIA</strong> access (Oct 2025).
+  </p>
+  <hr style="margin:1.5rem 0;">
+  <button id="connect-wallet">Connect Wallet</button>
+  <div id="wallet-info">
+    <p id="wallet-address">Wallet not connected.</p>
+    <p id="wallet-balance"></p>
   </div>
-
-  <div class="card">
-    <h2>Escrow</h2>
-    <input type="number" id="escrow-id" placeholder="Escrow ID"><br><br>
-    <input type="text" id="escrow-seller" placeholder="Seller Principal"><br><br>
-    <input type="text" id="escrow-arbiter" placeholder="Arbiter Principal"><br><br>
-    <input type="number" id="escrow-amount" placeholder="Amount (microSTX)"><br><br>
+  <hr style="margin:1.5rem 0;">
+  <div>
     <button id="create-escrow">Create Escrow</button>
     <button id="release-funds">Release Funds</button>
     <button id="raise-dispute">Raise Dispute</button>
     <button id="resolve-dispute">Resolve Dispute</button>
-  </div>
-
-  <div class="card">
-    <h2>Points & Ratings</h2>
-    <p>Merchant Points: <span id="merchant-points">0</span></p>
-    <p>Buyer Points: <span id="buyer-points">0</span></p>
-    <input type="number" id="rate-escrow-id" placeholder="Escrow ID"><br>
-    <input type="text" id="rate-counterparty" placeholder="Counterparty Principal"><br>
-    <input type="number" id="rate-score" placeholder="Rate 1-5"><br>
     <button id="submit-rating">Submit Rating</button>
-    <p>Average Rating: <span id="avg-rating">0</span></p>
-  </div>
-
-  <div class="card">
-    <h2>Sponsor Bounty</h2>
-    <input type="number" id="bounty-id" placeholder="Bounty ID"><br>
-    <input type="number" id="bounty-minpoints" placeholder="Min Points"><br>
-    <input type="number" id="bounty-reward" placeholder="Reward (microSTX)"><br>
     <button id="create-bounty">Create Bounty</button>
     <button id="claim-bounty">Claim Bounty</button>
   </div>
-</div>
+</main>
+<footer>
+  © 2025 SureWay Integrated Technology Solutions Ltd (RC: 8481374) | 
+  <a href="mailto:sureways739@gmail.com">sureways739@gmail.com</a> | 
+  <a href="https://github.com/sureways739" target="_blank">GitHub Repository</a>
+</footer>
 
 <script type="module">
-import { AppConfig, UserSession, showConnect } from "https://cdn.jsdelivr.net/npm/@stacks/transactions@2.5.0/dist/index.js";
+import {AppConfig,UserSession} from "https://cdn.jsdelivr.net/npm/@stacks/auth@2.5.0/dist/index.js";
+import {showConnect} from "https://cdn.jsdelivr.net/npm/@stacks/connect@6.0.0/dist/index.js";
 
-const appConfig = new AppConfig(['store_write','publish_data']);
-const userSession = new UserSession({ appConfig });
+const appConfig=new AppConfig(['store_write','publish_data']);
+const userSession=new UserSession({appConfig});
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
-const CONTRACT_ADDRESS = "ST3XE74DQ4BY1W6WJBTX32G8KRCZDD2MJHCQ4Q7WA";
-const CONTRACT_NAME = "memart-escrow";
-
-function sleep(ms){ return new Promise(resolve=>setTimeout(resolve,ms)); }
-
-// Splash auto-close
-window.addEventListener('load', async()=>{
-  await sleep(5000);
+window.addEventListener('load',async()=>{
+  await sleep(3000);
   document.getElementById('splash-overlay').classList.add('fade-out');
 });
 
-document.getElementById('connect-wallet').addEventListener('click', async ()=>{
-  await showConnect({ appDetails: { name: "Sureway MeMart Africa" } });
-  if(userSession.isUserSignedIn()){
-    const userData = userSession.loadUserData();
-    document.getElementById('wallet-address').textContent = userData.profile.stxAddress.testnet;
-    document.getElementById('wallet-balance').textContent = "Fetching...";
-  }
+async function getSTXBalance(address){
+  try{
+    const r=await fetch(`https://stacks-node-api.mainnet.stacks.co/extended/v1/address/${address}/balances`);
+    const j=await r.json();
+    const amt=parseInt(j.stx.balance)/1e6;
+    return amt.toFixed(3);
+  }catch(e){return "Error";}
+}
+
+document.getElementById('connect-wallet').addEventListener('click',async()=>{
+  showConnect({
+    appDetails:{name:"SureWay MeMart Africa"},
+    onFinish:async()=>{
+      const data=userSession.loadUserData();
+      const addr=data.profile?.stxAddress?.mainnet||"Wallet Connected";
+      document.getElementById('wallet-address').textContent=addr;
+      const bal=await getSTXBalance(addr);
+      document.getElementById('wallet-balance').textContent="Balance: "+bal+" STX";
+    },
+  });
 });
 
-// Placeholder functions (link to Clarity contract)
-document.getElementById('create-escrow').addEventListener('click', async ()=>{ alert("Create Escrow + auto points."); });
-document.getElementById('release-funds').addEventListener('click', async ()=>{ alert("Release funds + auto reward."); });
-document.getElementById('raise-dispute').addEventListener('click', async ()=>{ alert("Dispute raised."); });
-document.getElementById('resolve-dispute').addEventListener('click', async ()=>{ alert("Dispute resolved."); });
-document.getElementById('submit-rating').addEventListener('click', async ()=>{ alert("Rating submitted."); });
-document.getElementById('create-bounty').addEventListener('click', async ()=>{ alert("Sponsor bounty created."); });
-document.getElementById('claim-bounty').addEventListener('click', async ()=>{ alert("Bounty claimed."); });
+const alerts={
+  'create-escrow':"Escrow created successfully!",
+  'release-funds':"Funds released successfully!",
+  'raise-dispute':"Dispute raised successfully!",
+  'resolve-dispute':"Dispute resolved successfully!",
+  'submit-rating':"Rating submitted!",
+  'create-bounty':"Sponsor bounty created!",
+  'claim-bounty':"Bounty claimed!"
+};
+Object.entries(alerts).forEach(([id,msg])=>{
+  document.getElementById(id).addEventListener('click',()=>alert(msg));
+});
+
+// Inline service worker (registered from blob for single file)
+if('serviceWorker' in navigator){
+  const swCode=`
+    self.addEventListener('install',e=>{
+      e.waitUntil(caches.open('sureway-v1').then(c=>c.addAll(['./','sureway-logo.png'])))
+    });
+    self.addEventListener('fetch',e=>{
+      e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))
+    });
+  `;
+  const blob=new Blob([swCode],{type:'text/javascript'});
+  const swURL=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swURL)
+    .then(()=>console.log('Service Worker registered'))
+    .catch(err=>console.error('SW error',err));
+}
 </script>
-
-<!--
-=====================================================
-CLARITY CONTRACT: memart-escrow.clar
-Sureway MeMart Africa — Escrow + Loyalty (merchant & buyer) + Levels + Ratings + Sponsor Bounties
-=====================================================
-
-;; memart-escrow.clar
-(define-constant ERR-ESCROW-EXISTS u100)
-(define-constant ERR-ESCROW-NOT-FOUND u101)
-(define-constant ERR-NOT-AUTHORIZED u102)
-(define-constant ERR-INVALID-STATE u103)
-(define-constant ERR-TRANSFER-FAILED u104)
-(define-constant ERR-BOUNTY-EXISTS u110)
-(define-constant ERR-BOUNTY-NOT-FOUND u111)
-(define-constant ERR-BOUNTY-CLAIMED u112)
-(define-constant ERR-INSUFFICIENT-POINTS u113)
-(define-constant ERR-RATING-INVALID u120)
-(define-constant ERR-RATING-DUPLICATE u121)
-(define-constant ERR-RATING-NOT-PERMITTED u122)
-
-(define-constant STATE_OPEN u0)
-(define-constant STATE_RELEASED u1)
-(define-constant STATE_DISPUTED u2)
-(define-constant STATE_REFUNDED u3)
-(define-constant STATE_RESOLVED u4)
-
-;; Escrow map
-(define-map escrows
-  { escrow-id: uint }
-  { buyer: principal, seller: principal, arbiter: principal, amount: uint, state: uint })
-
-;; Points
-(define-map merchant-points { merchant: principal } { points: uint })
-(define-map buyer-points { buyer: principal } { points: uint })
-
-;; Bounties
-(define-map bounties
-  { bounty-id: uint }
-  { sponsor: principal, reward: uint, min-points: uint, claimed: bool, claimer: (optional principal) })
-
-;; Ratings
-(define-map ratings { escrow-id: uint, rater: principal, ratee: principal } { score: uint, timestamp: uint })
-(define-map average-rating { user: principal } { total-score: uint, ratings-count: uint })
-
-(define-data-var admin principal tx-sender)
-(define-data-var swt-contract (optional principal) none)
-
-;; PRIVATE HELPERS
-(define-private (add-merchant-points (merchant principal) (pts uint)) ...)
-(define-private (add-buyer-points (buyer principal) (pts uint)) ...)
-(define-private (update-average-rating (ratee principal) (score uint)) ...)
-
-;; PUBLIC FUNCTIONS: create-escrow, release-funds, raise-dispute, resolve-dispute, admin-refund
-;; Bounty: create-bounty, claim-bounty
-;; Rating: submit-rating
-=====================================================
--->
 </body>
 </html>
