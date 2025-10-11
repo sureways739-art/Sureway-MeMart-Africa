@@ -1,137 +1,152 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>SureWay MeMart Africa</title>
-<meta name="description" content="Revolutionizing African Enterprise through Blockchain and Digital Economy" />
-<link rel="icon" type="image/png" href="sureway-logo.png" />
-
-<!-- Manifest (inline for single-file use) -->
-<link rel="manifest" id="inline-manifest" href="data:application/json,{
-  &quot;name&quot;:&quot;SureWay MeMart Africa&quot;,
-  &quot;short_name&quot;:&quot;MeMart&quot;,
-  &quot;start_url&quot;:&quot;.&quot;,
-  &quot;display&quot;:&quot;standalone&quot;,
-  &quot;background_color&quot;:&quot;#004aad&quot;,
-  &quot;theme_color&quot;:&quot;#004aad&quot;
-}" />
-
-<style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
-body{background:#f5f7fa;color:#222;display:flex;flex-direction:column;align-items:center;min-height:100vh;text-align:center}
-#splash-overlay{position:fixed;inset:0;background:#004aad;color:gold;font-size:1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity 1s ease}
-#splash-overlay.fade-out{opacity:0;pointer-events:none}
-header{background:#004aad;color:#fff;width:100%;padding:1rem;font-size:1.2rem;font-weight:600;box-shadow:0 2px 5px rgba(0,0,0,0.2)}
-main{max-width:600px;width:90%;margin:2rem auto;background:#fff;border-radius:1rem;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-button{background:#004aad;color:#fff;border:none;border-radius:8px;padding:0.7rem 1.5rem;font-size:1rem;margin:0.5rem;cursor:pointer;transition:background 0.3s ease}
-button:hover{background:#00368b}
-footer{margin-top:auto;padding:1rem;background:#f1f1f1;font-size:0.9rem;color:#666;width:100%;text-align:center}
-#wallet-info{margin-top:1rem;font-size:0.9rem;color:#333}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sureway MeMart Africa – Escrow Demo (Stacks Testnet)</title>
+  <script src="https://unpkg.com/@stacks/connect@latest/dist/stacks-connect.umd.js"></script>
+  <script src="https://unpkg.com/@stacks/transactions@latest/dist/index.umd.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #002366, #ffd700);
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      padding: 20px;
+      background-color: rgba(0,0,0,0.2);
+    }
+    img.logo {
+      height: 90px;
+      margin-bottom: 10px;
+    }
+    main {
+      margin: 20px auto;
+      max-width: 600px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 15px;
+      padding: 20px;
+    }
+    button {
+      background: #ffd700;
+      color: #002366;
+      border: none;
+      padding: 12px 20px;
+      margin: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    pre {
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      overflow-x: auto;
+      text-align: left;
+    }
+    footer {
+      margin-top: 20px;
+      font-size: 13px;
+      background-color: rgba(0,0,0,0.2);
+      padding: 10px;
+    }
+  </style>
 </head>
 <body>
-<div id="splash-overlay">
-  <img src="sureway-logo.png" alt="SureWay Logo" width="120" height="120" style="margin-bottom:1rem;">
-  <p>Loading SureWay MeMart Africa...</p>
-</div>
+  <header>
+    <img src="Sureway-logo.png" alt="Sureway Logo" class="logo" />
+    <h2>Sureway MeMart Africa Escrow Demo</h2>
+    <p>Blockchain-powered logistics & payment solution (Stacks Testnet)</p>
+  </header>
 
-<header>SureWay MeMart Africa</header>
-<main>
-  <h2>Empowering African Enterprise through Blockchain</h2>
-  <p>Engage in the global digital economy with SureWay.</p>
-  <p style="margin-top:.5rem;color:#555;">
-    Featuring opportunities like <strong>Dangote Group listings</strong> and SEC’s <strong>Tokenized Tesla &amp; NVIDIA</strong> access (Oct 2025).
-  </p>
-  <hr style="margin:1.5rem 0;">
-  <button id="connect-wallet">Connect Wallet</button>
-  <div id="wallet-info">
-    <p id="wallet-address">Wallet not connected.</p>
-    <p id="wallet-balance"></p>
-  </div>
-  <hr style="margin:1.5rem 0;">
-  <div>
-    <button id="create-escrow">Create Escrow</button>
-    <button id="release-funds">Release Funds</button>
-    <button id="raise-dispute">Raise Dispute</button>
-    <button id="resolve-dispute">Resolve Dispute</button>
-    <button id="submit-rating">Submit Rating</button>
-    <button id="create-bounty">Create Bounty</button>
-    <button id="claim-bounty">Claim Bounty</button>
-  </div>
-</main>
-<footer>
-  © 2025 SureWay Integrated Technology Solutions Ltd (RC: 8481374) | 
-  <a href="mailto:sureways739@gmail.com">sureways739@gmail.com</a> | 
-  <a href="https://github.com/sureways739" target="_blank">GitHub Repository</a>
-</footer>
+  <main>
+    <h3>Escrow Smart Contract (Simulated)</h3>
+    <pre id="clarity-contract">
+// sureway-escrow.clar
+(define-public (deposit (receiver principal) (amount uint))
+  (begin
+    (print {action: "deposit", to: receiver, amount: amount})
+    (ok true)))
 
-<script type="module">
-import {AppConfig,UserSession} from "https://cdn.jsdelivr.net/npm/@stacks/auth@2.5.0/dist/index.js";
-import {showConnect} from "https://cdn.jsdelivr.net/npm/@stacks/connect@6.0.0/dist/index.js";
+(define-public (confirm-delivery)
+  (begin
+    (print {action: "confirm-delivery"})
+    (ok true)))
 
-const appConfig=new AppConfig(['store_write','publish_data']);
-const userSession=new UserSession({appConfig});
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+(define-public (refund)
+  (begin
+    (print {action: "refund"})
+    (ok true)))
+    </pre>
 
-window.addEventListener('load',async()=>{
-  await sleep(3000);
-  document.getElementById('splash-overlay').classList.add('fade-out');
-});
+    <h3>Transaction Simulation</h3>
+    <p><strong>Seller:</strong> ST2W71F29DDHZRCAT6FTWQ7N5HA44X6RG1MY8QRSC<br>
+    <strong>Amount:</strong> 200 STX<br>
+    <strong>Buyer Wallet:</strong> Connect below</p>
 
-async function getSTXBalance(address){
-  try{
-    const r=await fetch(`https://stacks-node-api.mainnet.stacks.co/extended/v1/address/${address}/balances`);
-    const j=await r.json();
-    const amt=parseInt(j.stx.balance)/1e6;
-    return amt.toFixed(3);
-  }catch(e){return "Error";}
-}
+    <button id="connectWallet">🔗 Connect Leather Wallet</button>
+    <button id="depositBtn" disabled>💰 Deposit 200 STX</button>
+    <button id="confirmBtn" disabled>✅ Confirm Delivery</button>
+    <button id="refundBtn" disabled>↩️ Refund</button>
 
-document.getElementById('connect-wallet').addEventListener('click',async()=>{
-  showConnect({
-    appDetails:{name:"SureWay MeMart Africa"},
-    onFinish:async()=>{
-      const data=userSession.loadUserData();
-      const addr=data.profile?.stxAddress?.mainnet||"Wallet Connected";
-      document.getElementById('wallet-address').textContent=addr;
-      const bal=await getSTXBalance(addr);
-      document.getElementById('wallet-balance').textContent="Balance: "+bal+" STX";
-    },
-  });
-});
+    <div id="status" style="margin-top:15px;font-size:14px;"></div>
+  </main>
 
-const alerts={
-  'create-escrow':"Escrow created successfully!",
-  'release-funds':"Funds released successfully!",
-  'raise-dispute':"Dispute raised successfully!",
-  'resolve-dispute':"Dispute resolved successfully!",
-  'submit-rating':"Rating submitted!",
-  'create-bounty':"Sponsor bounty created!",
-  'claim-bounty':"Bounty claimed!"
-};
-Object.entries(alerts).forEach(([id,msg])=>{
-  document.getElementById(id).addEventListener('click',()=>alert(msg));
-});
+  <footer>
+    © 2025 Sureway Integrated Technology Solutions Limited RC 8481374<br>
+    Abdulazeez Yusuf — Founder & CEO<br>
+    Microsoft Build 2025 | Microsoft Ignite 2025 | 3MTT Cohort 3 Fellow (No-Code Azure ML)<br>
+    WEF SDIM25 | WEF Insight 25 | WEF Cities of Mayors 25 | WEF SME Candidate 25
+  </footer>
 
-// Inline service worker (registered from blob for single file)
-if('serviceWorker' in navigator){
-  const swCode=`
-    self.addEventListener('install',e=>{
-      e.waitUntil(caches.open('sureway-v1').then(c=>c.addAll(['./','sureway-logo.png'])))
-    });
-    self.addEventListener('fetch',e=>{
-      e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))
-    });
-  `;
-  const blob=new Blob([swCode],{type:'text/javascript'});
-  const swURL=URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swURL)
-    .then(()=>console.log('Service Worker registered'))
-    .catch(err=>console.error('SW error',err));
-}
-</script>
+  <script>
+    const { AppConfig, UserSession, showConnect } = window["@stacks/connect"];
+    const { openContractCall, AnchorMode, makeStandardSTXPostCondition, PostConditionMode, FungibleConditionCode } = window["@stacks/transactions"];
+
+    const appConfig = new AppConfig(['store_write']);
+    const userSession = new UserSession({ appConfig });
+
+    const connectWallet = document.getElementById("connectWallet");
+    const depositBtn = document.getElementById("depositBtn");
+    const confirmBtn = document.getElementById("confirmBtn");
+    const refundBtn = document.getElementById("refundBtn");
+    const statusDiv = document.getElementById("status");
+
+    let connectedAddress = null;
+
+    connectWallet.onclick = async () => {
+      showConnect({
+        userSession,
+        appDetails: {
+          name: "Sureway MeMart Africa",
+          icon: "Sureway-logo.png",
+        },
+        onFinish: () => {
+          const userData = userSession.loadUserData();
+          connectedAddress = userData.profile.stxAddress.testnet;
+          statusDiv.innerHTML = `✅ Connected: ${connectedAddress}`;
+          depositBtn.disabled = false;
+          confirmBtn.disabled = false;
+          refundBtn.disabled = false;
+        },
+      });
+    };
+
+    async function simulateTx(action) {
+      const time = new Date().toLocaleTimeString();
+      statusDiv.innerHTML += `<br>[${time}] ${action} action triggered. Broadcasting simulated testnet transaction...`;
+      await new Promise(r => setTimeout(r, 2000));
+      statusDiv.innerHTML += `<br>✅ ${action} completed on Stacks testnet.`;
+    }
+
+    depositBtn.onclick = () => simulateTx("Deposit 200 STX");
+    confirmBtn.onclick = () => simulateTx("Confirm Delivery");
+    refundBtn.onclick = () => simulateTx("Refund to Buyer");
+  </script>
 </body>
 </html>
