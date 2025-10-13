@@ -1,164 +1,152 @@
 !DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sureway MeMart Africa Escrow Demo</title>
-  <link rel="icon" href="Sureway-logo.png">
-  <script src="https://cdn.jsdelivr.net/npm/@stacks/connect@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@stacks/transactions@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@stacks/network@latest"></script>
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(180deg, #f4f8ff, #ffffff);
-      color: #1b1b1b;
-      text-align: center;
-      padding: 20px;
-    }
-    h2 { color: #004aad; }
-    button {
-      margin: 8px;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      background-color: #004aad;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    button:hover { background-color: #0073ff; transform: scale(1.05); }
-    #feed {
-      width: 90%;
-      max-width: 700px;
-      height: 250px;
-      overflow-y: auto;
-      background: #0f172a;
-      color: #00ff9d;
-      text-align: left;
-      margin: 20px auto;
-      border-radius: 10px;
-      padding: 15px;
-      font-family: monospace;
-    }
-    footer {
-      margin-top: 40px;
-      font-size: 14px;
-      color: #444;
-      line-height: 1.6;
-    }
-    pre {
-      background: #e9f0ff;
-      padding: 10px;
-      border-radius: 8px;
-      overflow-x: auto;
-      text-align: left;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sureway MeMart Africa Escrow Demo</title>
+<link rel="icon" href="Sureway-logo.png">
+<script src="https://cdn.jsdelivr.net/npm/@stacks/connect@latest/dist/stacks-connect.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@stacks/transactions@latest/dist/stacks-transactions.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@stacks/network@latest/dist/stacks-network.min.js"></script>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(180deg, #002244, #0055aa);
+    color: #fff;
+    margin: 0; padding: 0;
+    text-align: center;
+  }
+  header img {
+    width: 90px; margin-top: 20px;
+  }
+  h1 { color: #00ccff; font-size: 24px; margin-top: 10px; }
+  section {
+    background: rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 20px; margin: 20px;
+  }
+  button {
+    background: #00ccff; border: none;
+    color: #fff; padding: 10px 20px;
+    border-radius: 10px; margin: 5px;
+    cursor: pointer; font-weight: bold;
+  }
+  button:hover { background: #0099cc; }
+  pre {
+    background: rgba(0,0,0,0.4);
+    padding: 10px; border-radius: 10px;
+    text-align: left; overflow-x: auto;
+    font-size: 12px;
+  }
+  footer {
+    margin-top: 30px; font-size: 12px;
+    background: rgba(0,0,0,0.5);
+    padding: 10px;
+  }
+</style>
 </head>
 <body>
 
-  <img src="Sureway-logo.png" alt="Sureway Logo" width="100">
-  <h2>Sureway MeMart Africa Escrow Demo</h2>
-  <p>Blockchain-powered logistics & payment escrow built on <b>Stacks Testnet</b></p>
+<header>
+  <img src="Sureway-logo.png" alt="Sureway Logo">
+  <h1>Sureway MeMart Africa Escrow Demo</h1>
+  <p>Blockchain-powered logistics & escrow (Stacks Testnet)</p>
+</header>
 
-  <h3>Smart Contract: <code>sureway-escrow.clar</code></h3>
-  <pre>
-// Sureway Escrow Contract (Clarity)
-
-(define-data-var deposits (map principal uint))
-
+<section>
+  <h3>Clarity Smart Contract (Embedded)</h3>
+  <pre>(define-data-var deposits (map principal uint))
 (define-public (deposit (receiver principal) (amount uint))
   (begin
     (map-set deposits {sender: tx-sender} amount)
     (print {action: "deposit", from: tx-sender, to: receiver, amount: amount})
     (ok true)))
-
 (define-public (confirm-delivery)
   (begin
     (print {action: "confirm-delivery", sender: tx-sender})
     (ok true)))
-
 (define-public (refund)
   (begin
     (print {action: "refund", sender: tx-sender})
-    (ok true)))
-  </pre>
+    (ok true)))</pre>
 
-  <h3>Transaction Simulation</h3>
   <p><b>Seller:</b> ST2W71F29DDHZRCAT6FTWQ7N5HA44X6RG1MY8QRSC</p>
   <p><b>Amount:</b> 200 STX</p>
-  <p><b>Buyer Wallet:</b> Connect below</p>
+  <div>
+    <button id="connectWallet">🔗 Connect Leather Wallet</button>
+    <button id="deposit">💰 Deposit 200 STX</button>
+    <button id="confirm">✅ Confirm Delivery</button>
+    <button id="refund">↩️ Refund</button>
+  </div>
+</section>
 
-  <button id="connectWallet">🔗 Connect Leather Wallet</button>
-  <button id="deposit">💰 Deposit 200 STX</button>
-  <button id="confirm">✅ Confirm Delivery</button>
-  <button id="refund">↩️ Refund</button>
-
+<section>
   <h3>🔍 Live Blockchain Feed</h3>
-  <div id="feed">⏳ Waiting for blockchain activity...</div>
+  <pre id="feed">⏳ Waiting for blockchain activity...</pre>
+</section>
 
-  <footer>
-    © 2025 Sureway Integrated Technology Solutions Limited RC 8481374<br>
-  
-  </footer
+<footer>
+  © 2025 Sureway Integrated Technology Solutions Limited RC 8481374<br>
+  Abdulazeez Yusuf — Founder & CEO<br>
+  Microsoft Build 2025 | Microsoft Ignite 2025 | 3MTT Cohort 3 Fellow (No-Code Azure ML)<br>
+  WEF SDIM25 | WEF Insight 25 | WEF Cities of Mayors 25 | WEF SME Candidate 25
+</footer>
 
-  <script>
-    const { AppConfig, UserSession, showConnect } = window.StacksConnect;
-    const { openContractCall } = window.StacksTransactions;
-    const { StacksTestnet } = window.StacksNetwork;
+<script>
+const { AppConfig, UserSession, showConnect } = window.StacksConnect;
+const { openContractCall } = window.StacksTransactions;
+const { StacksTestnet } = window.StacksNetwork;
 
-    const appConfig = new AppConfig(['store_write', 'publish_data']);
-    const userSession = new UserSession({ appConfig });
-    const network = new StacksTestnet();
+const appConfig = new AppConfig(['store_write', 'publish_data']);
+const userSession = new UserSession({ appConfig });
+const network = new StacksTestnet();
 
-    // After deploying on Hiro Sandbox, replace these:
-    const contractAddress = "ST2W71F29DDHZRCAT6FTWQ7N5HA44X6RG1MY8QRSC";
-    const contractName = "sureway-escrow";
+const contractAddress = "ST2W71F29DDHZRCAT6FTWQ7N5HA44X6RG1MY8QRSC";
+const contractName = "sureway-escrow";
+const feed = document.getElementById("feed");
 
-    const feed = document.getElementById("feed");
-    function logFeed(msg) {
-      const t = new Date().toLocaleTimeString();
-      feed.innerHTML += `\n[${t}] ${msg}`;
-      feed.scrollTop = feed.scrollHeight;
-    }
+function logFeed(msg) {
+  const t = new Date().toLocaleTimeString();
+  feed.innerHTML += `\n[${t}] ${msg}`;
+  feed.scrollTop = feed.scrollHeight;
+}
 
-    document.getElementById("connectWallet").onclick = () => {
-      showConnect({
-        userSession,
-        appDetails: { name: "Sureway MeMart Africa", icon: "Sureway-logo.png" },
-        onFinish: () => logFeed("✅ Wallet connected successfully.")
-      });
+document.getElementById("connectWallet").onclick = () => {
+  showConnect({
+    userSession,
+    appDetails: { name: "Sureway MeMart Africa", icon: "Sureway-logo.png" },
+    onFinish: () => logFeed("✅ Wallet connected successfully.")
+  });
+};
+
+async function transact(fnName) {
+  if (!userSession.isUserSignedIn()) {
+    logFeed("⚠️ Please connect your wallet first!");
+    return;
+  }
+
+  try {
+    const txOptions = {
+      contractAddress,
+      contractName,
+      functionName: fnName,
+      functionArgs: [],
+      network,
+      appDetails: { name: "Sureway MeMart Africa" },
+      onFinish: data => logFeed(`✅ ${fnName} executed | TxID: ${data.txId}`),
+      onCancel: () => logFeed("❌ Transaction cancelled.")
     };
+    logFeed(`🚀 Executing ${fnName}...`);
+    await openContractCall(txOptions);
+  } catch (err) {
+    logFeed(`❌ Error: ${err.message}`);
+  }
+}
 
-    async function transact(fnName) {
-      if (!userSession.isUserSignedIn()) {
-        logFeed("⚠️ Connect your wallet first!");
-        return;
-      }
-      try {
-        const txOptions = {
-          contractAddress,
-          contractName,
-          functionName: fnName,
-          functionArgs: [],
-          network,
-          appDetails: { name: "Sureway MeMart Africa" },
-          onFinish: data => logFeed(`✅ ${fnName} executed | TxID: ${data.txId}`),
-          onCancel: () => logFeed("❌ Transaction cancelled.")
-        };
-        logFeed(`🚀 Running ${fnName}...`);
-        await openContractCall(txOptions);
-      } catch (err) {
-        logFeed(`❌ Error: ${err.message}`);
-      }
-    }
-
-    document.getElementById("deposit").onclick = () => transact("deposit");
-    document.getElementById("confirm").onclick = () => transact("confirm-delivery");
-    document.getElementById("refund").onclick = () => transact("refund");
-  </script>
+document.getElementById("deposit").onclick = () => transact("deposit");
+document.getElementById("confirm").onclick = () => transact("confirm-delivery");
+document.getElementById("refund").onclick = () => transact("refund");
+</script>
 
 </body>
 </html>
